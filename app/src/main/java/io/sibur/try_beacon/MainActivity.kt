@@ -1,10 +1,12 @@
 package io.sibur.try_beacon
 
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import io.sibur.try_beacon.helpers.PermissionHelper
 import kotlinx.android.synthetic.main.activity_main.btnReset
 import kotlinx.android.synthetic.main.activity_main.btnStart
@@ -15,6 +17,9 @@ import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
 import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.service.ArmaRssiFilter
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 
 private const val TAG = "try-beacon"
 
@@ -54,12 +59,15 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
             beaconManager.stopRangingBeaconsInRegion(region)
             beaconManager.unbind(this)
             btnStart.isEnabled = false
+            it.isEnabled = false
+            saveToCSV()
         })
 
         btnReset.setOnClickListener({
             dataList.clear()
             tvChecksCount.text = "0"
             btnStart.isEnabled = true
+            btnStop.isEnabled = true
         })
 
     }
@@ -85,6 +93,44 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
     private fun addItem(item: CheckItem) {
         dataList.add(item)
         tvChecksCount.text = dataList.size.toString()
+    }
+
+    private fun saveToCSV() {
+        var fileWriter: FileWriter? = null
+        val CSV_HEADER = "<1>, <2>, <3>, <4>"
+
+        try {
+            val file = File(Environment.getExternalStorageDirectory(), System.currentTimeMillis().toString() + ".txt")
+
+            fileWriter = FileWriter(file)
+
+            fileWriter.append(CSV_HEADER)
+            fileWriter.append('\n')
+
+            for (check in dataList) {
+                fileWriter.append(check.data[0].toString())
+                fileWriter.append(',')
+                fileWriter.append(check.data[1].toString())
+                fileWriter.append(',')
+                fileWriter.append(check.data[2].toString())
+                fileWriter.append(',')
+                fileWriter.append(check.data[3].toString())
+                fileWriter.append('\n')
+            }
+
+            Log.d(TAG, "Write CSV successfully!")
+        } catch (e: Exception) {
+            Log.d(TAG, "Writing CSV error!")
+            e.printStackTrace()
+        } finally {
+            try {
+                fileWriter!!.flush()
+                fileWriter.close()
+            } catch (e: IOException) {
+                Log.e(TAG, "Flushing/closing error!")
+                e.printStackTrace()
+            }
+        }
     }
 
 }

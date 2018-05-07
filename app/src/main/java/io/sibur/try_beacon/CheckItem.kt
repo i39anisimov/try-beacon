@@ -7,7 +7,7 @@ interface Factory<out T> {
 }
 
 class CheckItem {
-    val data = IntArray(4)
+    val data = IntArray(4, { -100 })
 
     companion object : Factory<CheckItem> {
         override fun create(beacons: MutableCollection<Beacon>): CheckItem {

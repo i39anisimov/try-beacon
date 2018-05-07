@@ -45,19 +45,23 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
         beaconManager = BeaconManager.getInstanceForApplication(this)
         beaconManager.beaconParsers.add(BeaconParser().setBeaconLayout(IBEACON_LAYOUT))
         BeaconManager.setRssiFilterImplClass(ArmaRssiFilter::class.java)
-        //   RunningAverageRssiFilter.setSampleExpirationMilliseconds(15000L)
         BeaconManager.setAndroidLScanningDisabled(true)
         beaconManager.backgroundBetweenScanPeriod = BETWEEN_SCAN_PERIOD
         beaconManager.backgroundScanPeriod = SCAN_PERIOD
-
+        beaconManager.bind(this)
 
         btnStart.setOnClickListener({
-            beaconManager.bind(this)
+            try {
+                beaconManager.startRangingBeaconsInRegion(region)
+            } catch (e: RemoteException) {
+                e.printStackTrace()
+            }
+            it.isEnabled = false
         })
 
         btnStop.setOnClickListener({
             beaconManager.stopRangingBeaconsInRegion(region)
-            beaconManager.unbind(this)
+
             btnStart.isEnabled = false
             it.isEnabled = false
             saveToCSV()
@@ -65,6 +69,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
 
         btnReset.setOnClickListener({
             dataList.clear()
+            mainThread.removeCallbacksAndMessages(null)
             tvChecksCount.text = "0"
             btnStart.isEnabled = true
             btnStop.isEnabled = true
@@ -74,7 +79,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
 
     override fun onDestroy() {
         super.onDestroy()
-        btnStop.callOnClick()
+        beaconManager.unbind(this)
     }
 
     override fun onBeaconServiceConnect() {
@@ -82,11 +87,6 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
             if (beacons.isNotEmpty()) {
                 mainThread.post({ addItem(CheckItem.create(beacons)) })
             }
-        }
-        try {
-            beaconManager.startRangingBeaconsInRegion(region)
-        } catch (e: RemoteException) {
-            e.printStackTrace()
         }
     }
 
@@ -97,17 +97,20 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
 
     private fun saveToCSV() {
         var fileWriter: FileWriter? = null
-        val CSV_HEADER = "<1>, <2>, <3>, <4>"
+        val CSV_HEADER = "n,1,2,3,4"
 
         try {
-            val file = File(Environment.getExternalStorageDirectory(), System.currentTimeMillis().toString() + ".txt")
+            val file = File(Environment.getExternalStorageDirectory(), "download/" + System.currentTimeMillis().toString() + ".txt")
 
             fileWriter = FileWriter(file)
 
             fileWriter.append(CSV_HEADER)
             fileWriter.append('\n')
 
+            var num = 1
             for (check in dataList) {
+                fileWriter.append(num.toString())
+                fileWriter.append(',')
                 fileWriter.append(check.data[0].toString())
                 fileWriter.append(',')
                 fileWriter.append(check.data[1].toString())
@@ -116,6 +119,7 @@ class MainActivity : AppCompatActivity(), BeaconConsumer {
                 fileWriter.append(',')
                 fileWriter.append(check.data[3].toString())
                 fileWriter.append('\n')
+                num++
             }
 
             Log.d(TAG, "Write CSV successfully!")

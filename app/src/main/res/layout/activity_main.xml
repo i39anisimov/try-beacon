@@ -26,10 +26,4 @@
         android:layout_height="wrap_content"
         android:text="Reset"/>
 
-    <TextView
-        android:id="@+id/tvChecksCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="0"/>
-
 </LinearLayout>

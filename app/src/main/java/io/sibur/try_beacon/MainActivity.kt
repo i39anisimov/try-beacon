@@ -7,13 +7,8 @@ import io.sibur.try_beacon.helpers.PermissionHelper
 import kotlinx.android.synthetic.main.activity_main.btnReset
 import kotlinx.android.synthetic.main.activity_main.btnStart
 import kotlinx.android.synthetic.main.activity_main.btnStop
-import org.altbeacon.beacon.Region
 
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-        val region = Region("any", null, null, null)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

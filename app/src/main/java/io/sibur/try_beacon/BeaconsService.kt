@@ -9,6 +9,7 @@ import android.util.Log
 import org.altbeacon.beacon.BeaconConsumer
 import org.altbeacon.beacon.BeaconManager
 import org.altbeacon.beacon.BeaconParser
+import org.altbeacon.beacon.Region
 import org.altbeacon.beacon.service.ArmaRssiFilter
 import java.io.File
 import java.io.FileWriter
@@ -20,6 +21,11 @@ private const val BETWEEN_SCAN_PERIOD = 0L
 private const val SCAN_PERIOD = 1100L
 
 class BeaconsService : Service(), BeaconConsumer {
+
+    companion object {
+        val region = Region("any", null, null, null)
+    }
+
     private lateinit var beaconManager: BeaconManager
     private val dataList = ArrayList<CheckItem>()
 
@@ -35,7 +41,7 @@ class BeaconsService : Service(), BeaconConsumer {
     }
 
     override fun onDestroy() {
-        beaconManager.stopRangingBeaconsInRegion(MainActivity.region)
+        beaconManager.stopRangingBeaconsInRegion(BeaconsService.region)
         beaconManager.unbind(this)
 
         saveToCSV()
@@ -51,7 +57,7 @@ class BeaconsService : Service(), BeaconConsumer {
             }
         }
         try {
-            beaconManager.startRangingBeaconsInRegion(MainActivity.region)
+            beaconManager.startRangingBeaconsInRegion(BeaconsService.region)
         } catch (e: RemoteException) {
             e.printStackTrace()
         }

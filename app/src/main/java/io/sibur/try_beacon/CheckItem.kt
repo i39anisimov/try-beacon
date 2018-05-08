@@ -15,9 +15,13 @@ class CheckItem {
             beacons.map {
                 when (it.id3.toInt()) {
                     1 -> item.data[0] = it.rssi
+                    2 -> item.data[0] = it.rssi
                     4 -> item.data[1] = it.rssi
+                    5 -> item.data[1] = it.rssi
                     6 -> item.data[2] = it.rssi
                     7 -> item.data[3] = it.rssi
+                    8 -> item.data[2] = it.rssi
+                    9 -> item.data[3] = it.rssi
                 }
             }
             return item

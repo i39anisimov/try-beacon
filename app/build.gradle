@@ -9,7 +9,7 @@ android {
     buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "io.sibur.try_beacon"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"

@@ -21,12 +21,13 @@ class BeaconsService : Service() {
     private val dataList1 = ArrayList<CheckItem>()
     private val dataList2 = ArrayList<CheckItem>()
     private val dataList3 = ArrayList<CheckItem>()
+    private val startTimeStamp = System.currentTimeMillis() / 1_000
 
     private var mScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val parsedResult = parseData(result.scanRecord.bytes)
             if (parsedResult.first == 1) {
-                addItem(parsedResult.second, result.rssi, result.timestampNanos / 1000)
+                addItem(parsedResult.second, result.rssi, System.currentTimeMillis() / 1_000 - startTimeStamp)
                 Log.d(TAG, "${parsedResult.first}/${parsedResult.second}/${result.rssi}")
             }
         }

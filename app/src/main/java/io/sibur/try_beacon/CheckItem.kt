@@ -7,21 +7,16 @@ interface Factory<out T> {
 }
 
 class CheckItem {
-    val data = IntArray(4, { -100 })
+    val data = IntArray(3, { -100 })
 
     companion object : Factory<CheckItem> {
         override fun create(beacons: MutableCollection<Beacon>): CheckItem {
             val item = CheckItem()
             beacons.map {
                 when (it.id3.toInt()) {
-                    1 -> item.data[0] = it.rssi
                     2 -> item.data[0] = it.rssi
-                    4 -> item.data[1] = it.rssi
-                    5 -> item.data[1] = it.rssi
-                    6 -> item.data[2] = it.rssi
-                    7 -> item.data[3] = it.rssi
-                    8 -> item.data[2] = it.rssi
-                    9 -> item.data[3] = it.rssi
+                    8 -> item.data[1] = it.rssi
+                    9 -> item.data[2] = it.rssi
                 }
             }
             return item

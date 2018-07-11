@@ -1,6 +1,7 @@
 package io.sibur.try_beacon
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -8,9 +9,6 @@ import io.sibur.try_beacon.helpers.PermissionHelper
 import kotlinx.android.synthetic.main.activity_main.btnReset
 import kotlinx.android.synthetic.main.activity_main.btnStart
 import kotlinx.android.synthetic.main.activity_main.btnStop
-import android.bluetooth.BluetoothAdapter
-
-
 
 class MainActivity : AppCompatActivity() {
     private val REQUEST_ENABLE_BT = 1
@@ -29,6 +27,7 @@ class MainActivity : AppCompatActivity() {
                 startBTService()
             }
         })
+
 
         btnStop.setOnClickListener({
             btnStart.isEnabled = false

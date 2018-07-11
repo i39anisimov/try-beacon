@@ -18,7 +18,7 @@ import java.io.IOException
 private const val TAG = "try-beacon"
 private const val IBEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"
 private const val BETWEEN_SCAN_PERIOD = 0L
-private const val SCAN_PERIOD = 1100L
+private const val SCAN_PERIOD = 10000L
 
 class BeaconsService : Service(), BeaconConsumer {
 
@@ -52,9 +52,7 @@ class BeaconsService : Service(), BeaconConsumer {
 
     override fun onBeaconServiceConnect() {
         beaconManager.addRangeNotifier { beacons, _ ->
-            if (beacons.isNotEmpty()) {
-                addItem(CheckItem.create(beacons))
-            }
+            addItem(CheckItem.create(beacons))
         }
         try {
             beaconManager.startRangingBeaconsInRegion(BeaconsService.region)
@@ -81,15 +79,8 @@ class BeaconsService : Service(), BeaconConsumer {
 
             var num = 1
             for (check in dataList) {
-                fileWriter.append(num.toString())
-                fileWriter.append(',')
-                fileWriter.append(check.data[0].toString())
-                fileWriter.append(',')
-                fileWriter.append(check.data[1].toString())
-                fileWriter.append(',')
-                fileWriter.append(check.data[2].toString())
-                fileWriter.append(',')
-                fileWriter.append(check.data[3].toString())
+                fileWriter.append("$num")
+                check.data.map { fileWriter!!.append(", $it") }
                 fileWriter.append('\n')
                 num++
             }
@@ -116,6 +107,8 @@ class BeaconsService : Service(), BeaconConsumer {
         BeaconManager.setAndroidLScanningDisabled(true)
         beaconManager.backgroundBetweenScanPeriod = BETWEEN_SCAN_PERIOD
         beaconManager.backgroundScanPeriod = SCAN_PERIOD
+        beaconManager.foregroundBetweenScanPeriod = BETWEEN_SCAN_PERIOD
+        beaconManager.foregroundScanPeriod = SCAN_PERIOD
     }
 
     override fun onBind(intent: Intent): IBinder? {
